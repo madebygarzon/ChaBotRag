@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AI Chatbot PIP
  * Plugin URI: https://partnerinpublishing.com/
- * Description: Intelligent customer support chatbot, trained on the website’s own content, using RAG to deliver contextualized, accurate, and real-time responses.
+    * Description: Intelligent customer support chatbot, trained on the website’s own content, using RAG to deliver contextualized, accurate, and real-time responses.
  * Version: 1.1.0
  * Author: Dev Team PIP
  * License: MIT
