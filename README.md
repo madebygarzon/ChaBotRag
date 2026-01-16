@@ -1,377 +1,384 @@
 # AI Chatbot RAG - WordPress Plugin
 
-Plugin profesional de WordPress que implementa un chatbot de atención al usuario basado en RAG (Retrieval-Augmented Generation) usando DeepSeek como modelo de lenguaje.
+Professional WordPress plugin that implements a customer support chatbot based on RAG (Retrieval-Augmented Generation) using DeepSeek as the language model.
 
-## Características Principales
+## Key Features
 
-### ✅ Sistema RAG Completo
-- Indexación automática de contenido de WordPress
-- Búsqueda contextual basada en el contenido del sitio
-- Respuestas basadas SOLO en información del sitio (no inventa)
-- Arquitectura preparada para migrar a vector databases externos
+### ✅ Complete RAG System
+- Automatic WordPress content indexing
+- Contextual search based on site content
+- Responses based ONLY on site information (does not make things up)
+- Architecture ready to migrate to external vector databases
 
-### ✅ Indexación Inteligente
+### ✅ Intelligent Indexing
 - Posts, Pages, Custom Post Types
-- Productos WooCommerce (si está instalado)
-- Campos ACF (si están disponibles)
-- Limpieza automática de HTML, shortcodes y scripts
-- División en chunks con overlap configurable
+- WooCommerce Products (if installed)
+- ACF Fields (if available)
+- Automatic cleanup of HTML, shortcodes, and scripts
+- Content splitting into chunks with configurable overlap
 
-### ✅ Integración con DeepSeek
-- Modelo: `deepseek-chat`
-- Manejo de errores y rate limiting
-- Reintentos automáticos con exponential backoff
-- Control de temperatura y tokens
+### ✅ DeepSeek Integration
+- Model: `deepseek-chat`
+- Error handling and rate limiting
+- Automatic retries with exponential backoff
+- Temperature and token control
 
 ### ✅ Prompt Engineering
-- Sistema de prompts configurable
-- Historial de conversación (últimos N mensajes)
-- Mensaje personalizable cuando no hay contexto
-- Fuentes citadas en las respuestas
+- Configurable prompt system
+- Conversation history (last N messages)
+- Customizable message when no context available
+- Cited sources in responses
 
-### ✅ Interfaz de Usuario
-- Shortcode `[ai_chatbot]` para insertar en cualquier página
-- Diseño responsive y moderno
-- Indicador de escritura
-- Fuentes clickeables
-- Widget flotante (preparado para futuras versiones)
+### ✅ User Interface
+- `[ai_chatbot]` shortcode to insert on any page
+- Responsive and modern design
+- Typing indicator
+- Clickable sources
+- Floating widget with customizable position and appearance
 
-### ✅ Panel de Administración
-- Dashboard con estadísticas
-- Configuración completa
-- Indexación con un clic
-- Visualización de contenido indexado
+### ✅ Administration Panel
+- Dashboard with statistics
+- Complete configuration
+- One-click indexing
+- Indexed content visualization
 
-## Requisitos
+## Requirements
 
 - WordPress 6.0+
 - PHP 8.0+
-- MySQL 5.7+ o MariaDB 10.2+
-- API Key de DeepSeek ([obtener aquí](https://platform.deepseek.com/))
+- MySQL 5.7+ or MariaDB 10.2+
+- DeepSeek API Key ([get it here](https://platform.deepseek.com/))
 
-## Instalación
+## Installation
 
-### Método 1: Upload Manual
+### Method 1: Manual Upload
 
-1. Descarga el plugin como ZIP
-2. Ve a WordPress Admin → Plugins → Add New → Upload Plugin
-3. Selecciona el archivo ZIP y haz clic en "Install Now"
-4. Activa el plugin
+1. Download the plugin as ZIP
+2. Go to WordPress Admin → Plugins → Add New → Upload Plugin
+3. Select the ZIP file and click "Install Now"
+4. Activate the plugin
 
-### Método 2: FTP
+### Method 2: FTP
 
-1. Descarga y descomprime el plugin
-2. Sube la carpeta `ai-chatbot-rag` a `/wp-content/plugins/`
-3. Activa el plugin desde el panel de WordPress
+1. Download and unzip the plugin
+2. Upload the `ai-chatbot-rag` folder to `/wp-content/plugins/`
+3. Activate the plugin from the WordPress admin panel
 
-## Configuración Rápida
+## Quick Setup
 
-### 1. Configurar DeepSeek API
+### 1. Configure DeepSeek API
 
-1. Ve a **AI Chatbot → Settings**
-2. Ingresa tu API Key de DeepSeek
-3. Configura los parámetros del modelo:
-   - **Temperature**: 0.3 (recomendado para respuestas precisas)
+1. Go to **AI Chatbot → Settings**
+2. Enter your DeepSeek API Key
+3. Configure the model parameters:
+   - **Temperature**: 0.3 (recommended for accurate responses)
    - **Max Tokens**: 1000
    - **Model**: deepseek-chat
 
-### 2. Indexar Contenido
+### 2. Index Content
 
-1. Ve a **AI Chatbot → Indexing**
-2. Haz clic en "Start Indexing"
-3. Espera a que termine el proceso
-4. Verifica las estadísticas
+1. Go to **AI Chatbot → Indexing**
+2. Click "Start Indexing"
+3. Wait for the process to complete
+4. Verify the statistics
 
-### 3. Agregar Chatbot
+### 3. Add Chatbot
 
-Usa el shortcode en cualquier página o post:
+Use the shortcode on any page or post:
 
 ```
 [ai_chatbot]
 ```
 
-Con parámetros opcionales:
+With optional parameters:
 
 ```
-[ai_chatbot title="¿En qué puedo ayudarte?" height="600px"]
+[ai_chatbot title="How can we help?" height="600px"]
 ```
 
-## Configuración Avanzada
+## Advanced Configuration
 
-### Parámetros de Indexación
+### Indexing Parameters
 
-- **Chunk Size**: Tamaño de cada fragmento de texto (recomendado: 500 palabras)
-- **Chunk Overlap**: Palabras que se solapan entre chunks (recomendado: 50)
-- **Post Types**: Tipos de contenido a indexar (posts, pages, products, etc.)
-- **Exclude Categories**: Categorías a excluir de la indexación
+- **Chunk Size**: Size of each text fragment (recommended: 500 words)
+- **Chunk Overlap**: Words that overlap between chunks (recommended: 50)
+- **Post Types**: Content types to index (posts, pages, products, etc.)
+- **Exclude Categories**: Categories to exclude from indexing
 
-### Parámetros RAG
+### RAG Parameters
 
-- **Max Context Chunks**: Número máximo de fragmentos a incluir en el contexto (recomendado: 5)
-- **Conversation History**: Mensajes previos a incluir (recomendado: 5)
-- **System Prompt**: Prompt del sistema (usa `{context}` como placeholder)
-- **No Context Message**: Mensaje cuando no hay información relevante
+- **Max Context Chunks**: Maximum number of fragments to include in context (recommended: 5)
+- **Conversation History**: Previous messages to include (recommended: 5)
+- **System Prompt**: System prompt (use `{context}` as placeholder)
+- **No Context Message**: Message when no relevant information is available
 
-### System Prompt por Defecto
+### Default System Prompt
 
 ```
-Eres un asistente virtual profesional y útil del sitio web.
+You are a professional and helpful virtual assistant for the website.
 
-REGLAS ESTRICTAS:
-1. SOLO puedes responder usando la información proporcionada en el CONTEXTO a continuación.
-2. Si la información NO está en el contexto, debes responder: "Lo siento, no tengo información sobre ese tema en nuestra base de conocimientos."
-3. NO inventes, asumas o elabores información que no esté explícitamente en el contexto.
-4. Sé claro, conciso y profesional.
-5. Si el usuario pregunta algo fuera del contexto, admítelo honestamente.
+STRICT RULES:
+1. You can ONLY respond using information provided in the CONTEXT below.
+2. If the information is NOT in the context, you must respond: "I'm sorry, I don't have information about that topic in our knowledge base."
+3. DO NOT invent, assume, or elaborate on information that is not explicitly in the context.
+4. Be clear, concise, and professional.
+5. If the user asks something outside the context, admit it honestly.
 
-CONTEXTO:
+CONTEXT:
 {context}
 
-Responde de manera útil y profesional basándote ÚNICAMENTE en el contexto proporcionado.
+Respond in a helpful and professional manner based SOLELY on the provided context.
 ```
 
-## Arquitectura Técnica
+## Technical Architecture
 
-### Estructura de Directorios
+### Directory Structure
 
 ```
 ai-chatbot-rag/
-├── ai-chatbot-rag.php          # Plugin principal
+├── ai-chatbot-rag.php          # Main plugin file
 ├── includes/
-│   ├── class-database.php       # Gestión de BD
-│   ├── class-activator.php      # Activación del plugin
-│   ├── class-deactivator.php    # Desactivación
+│   ├── class-database.php       # Database management
+│   ├── class-activator.php      # Plugin activation
+│   ├── class-deactivator.php    # Plugin deactivation
 │   └── services/
-│       ├── class-content-indexer.php     # Indexación de contenido
-│       ├── class-embeddings-service.php  # Servicio de embeddings
-│       ├── class-deepseek-client.php     # Cliente API DeepSeek
-│       └── class-rag-engine.php          # Motor RAG
+│       ├── class-content-indexer.php     # Content indexing
+│       ├── class-embeddings-service.php  # Embeddings service
+│       ├── class-deepseek-client.php     # DeepSeek API client
+│       └── class-rag-engine.php          # RAG engine
 ├── admin/
-│   ├── class-admin.php          # Interfaz admin
-│   ├── class-settings.php       # Configuración
-│   └── views/                   # Vistas del admin
+│   ├── class-admin.php          # Admin interface
+│   ├── class-settings.php       # Settings configuration
+│   └── views/                   # Admin views
 ├── public/
 │   ├── class-chatbot.php        # Widget/Shortcode
-│   ├── class-rest-api.php       # API REST
-│   └── views/                   # Vistas públicas
+│   ├── class-rest-api.php       # REST API
+│   └── views/                   # Public views
 └── assets/
-    ├── css/                     # Estilos
+    ├── css/                     # Styles
     └── js/                      # JavaScript
 ```
 
-### Base de Datos
+### Database
 
-El plugin crea 3 tablas:
+The plugin creates 3 tables:
 
-1. **wp_ai_chatbot_chunks**: Almacena fragmentos de contenido
+1. **wp_ai_chatbot_chunks**: Stores content fragments
    - `id`, `post_id`, `post_type`, `chunk_index`
    - `content`, `content_clean`, `content_hash`
    - `word_count`, `metadata`
 
-2. **wp_ai_chatbot_embeddings**: Almacena embeddings (preparado para vector DB)
+2. **wp_ai_chatbot_embeddings**: Stores embeddings (ready for vector DB)
    - `id`, `chunk_id`, `embedding_model`
    - `embedding`, `dimensions`
 
-3. **wp_ai_chatbot_conversations**: Historial de conversaciones
+3. **wp_ai_chatbot_conversations**: Conversation history
    - `id`, `session_id`, `user_id`
    - `role`, `message`, `metadata`
 
 ### REST API Endpoints
 
 - `POST /wp-json/ai-chatbot-rag/v1/chat`
-  - Envía mensaje y recibe respuesta
-  - Requiere: `message`, `session_id`
-  - Rate limit: 10 req/min por IP
+  - Send message and receive response
+  - Requires: `message`, `session_id`
+  - Rate limit: 10 req/min per IP
 
 - `GET /wp-json/ai-chatbot-rag/v1/health`
-  - Verifica estado del sistema
+  - Check system status
 
 - `GET /wp-json/ai-chatbot-rag/v1/stats` (admin only)
-  - Estadísticas del sistema
+  - System statistics
 
-## Búsqueda Contextual (MVP)
+## Contextual Search (MVP)
 
-La versión MVP usa búsqueda basada en palabras clave con TF-IDF:
+The MVP version uses keyword-based search with TF-IDF:
 
-1. Extrae keywords del query del usuario
-2. Busca chunks que contengan esas keywords
-3. Calcula score de relevancia
-4. Retorna los top N chunks más relevantes
+1. Extract keywords from user query
+2. Search for chunks containing those keywords
+3. Calculate relevance score
+4. Return top N most relevant chunks
 
-**Próximas versiones**: Migración a embeddings vectoriales con:
+**Future versions**: Migration to vector embeddings with:
 - OpenAI Embeddings
 - Pinecone / Weaviate / Qdrant
-- Búsqueda por similitud de coseno
+- Cosine similarity search
 
-## Seguridad
+## Security
 
-### Implementado
+### Implemented
 
-✅ Nonces para todas las peticiones AJAX
-✅ Sanitización de inputs
-✅ Validación de permisos
-✅ Rate limiting por IP
-✅ Prepared statements SQL
-✅ Escape de outputs
+✅ Nonces for all AJAX requests
+✅ Input sanitization
+✅ Permission validation
+✅ Rate limiting per IP
+✅ SQL prepared statements
+✅ Output escaping
 ✅ HTTPOnly cookies
 
-### Recomendaciones
+### Recommendations
 
-- Mantén tu API Key segura
-- No compartas credenciales en repositorios públicos
-- Monitorea el uso de la API
-- Limita el acceso a endpoints sensibles
+- Keep your API Key secure
+- Don't share credentials in public repositories
+- Monitor API usage
+- Limit access to sensitive endpoints
 
-## Personalización
+## Customization
 
-### Modificar Estilos
+### Modify Styles
 
-Edita `assets/css/chatbot.css` o agrega CSS personalizado:
+Edit `assets/css/chatbot.css` or add custom CSS:
 
 ```css
 .ai-chatbot-container {
-    /* Tu CSS aquí */
+    /* Your CSS here */
 }
 ```
 
-### Modificar Prompts
+### Modify Prompts
 
-Desde **AI Chatbot → Settings → RAG Settings**, puedes personalizar:
+From **AI Chatbot → Settings → RAG Settings**, you can customize:
 - System Prompt
 - No Context Message
 - Chatbot Title
 - Input Placeholder
 
-### Hooks Disponibles (Próximamente)
+### Available Hooks (Coming Soon)
 
 ```php
-// Filtrar contenido antes de indexar
+// Filter content before indexing
 add_filter('ai_chatbot_rag_before_index', function($content, $post_id) {
-    // Modificar contenido
+    // Modify content
     return $content;
 }, 10, 2);
 
-// Modificar respuesta antes de enviar
+// Modify response before sending
 add_filter('ai_chatbot_rag_response', function($response, $query) {
-    // Modificar respuesta
+    // Modify response
     return $response;
 }, 10, 2);
 ```
 
 ## Troubleshooting
 
-### El chatbot no responde
+### Chatbot Not Responding
 
-1. Verifica que la API Key esté configurada
-2. Revisa que el contenido esté indexado
-3. Chequea el navegador console para errores JavaScript
-4. Verifica que el rate limit no esté bloqueando
+1. Verify that the API Key is configured
+2. Check that content is indexed
+3. Check browser console for JavaScript errors
+4. Verify that rate limit is not blocking
 
-### La indexación falla
+### Indexing Fails
 
-1. Aumenta el límite de memoria PHP (`memory_limit` en php.ini)
-2. Aumenta el tiempo de ejecución (`max_execution_time`)
-3. Revisa los logs de WordPress
-4. Indexa por lotes si tienes mucho contenido
+1. Increase PHP memory limit (`memory_limit` in php.ini)
+2. Increase execution time (`max_execution_time`)
+3. Check WordPress logs
+4. Index in batches if you have a lot of content
 
-### Las respuestas no son relevantes
+### Responses Are Not Relevant
 
-1. Ajusta el tamaño de chunks
-2. Aumenta el número de chunks en contexto
-3. Mejora el system prompt
-4. Revisa que el contenido esté correctamente indexado
+1. Adjust chunk size
+2. Increase number of chunks in context
+3. Improve system prompt
+4. Verify that content is correctly indexed
 
-### Errores de API
+### API Errors
 
-1. Verifica que la API Key sea válida
-2. Chequea el límite de tu plan DeepSeek
-3. Revisa los logs (`error_log`)
-4. Ajusta el timeout si la conexión es lenta
+1. Verify that the API Key is valid
+2. Check your DeepSeek plan limit
+3. Check logs (`error_log`)
+4. Adjust timeout if connection is slow
 
 ## Roadmap
 
 ### v1.1
-- [ ] Widget flotante configurable
-- [ ] Exportar conversaciones
-- [ ] Métricas y analytics
-- [ ] Feedback de usuarios
+- [x] Configurable floating widget
+- [ ] Export conversations
+- [ ] Metrics and analytics
+- [ ] User feedback
 
 ### v1.2
-- [ ] Embeddings vectoriales reales
-- [ ] Integración con Pinecone/Weaviate
-- [ ] Multi-idioma mejorado
-- [ ] A/B testing de prompts
+- [ ] Real vector embeddings
+- [ ] Pinecone/Weaviate integration
+- [ ] Improved multi-language support
+- [ ] A/B testing for prompts
 
 ### v2.0
-- [ ] Múltiples modelos (OpenAI, Claude, etc.)
-- [ ] Fine-tuning personalizado
-- [ ] Integraciones con CRM
-- [ ] API pública para desarrolladores
+- [ ] Multiple models (OpenAI, Claude, etc.)
+- [ ] Custom fine-tuning
+- [ ] CRM integrations
+- [ ] Public API for developers
 
-## Contribuir
+## Customization Prompt Example
 
-## Promt de ejemplo de personalización
--You are a professional virtual assistant for Partner in Publishing, a publishing services company.
+Example prompt for Partner in Publishing:
 
-  YOUR ROLE:
-  - Help visitors understand our services and capabilities
-  - Provide accurate information based solely on the context below
-  - Guide visitors to contact us for personalized assistance
+```
+You are a professional virtual assistant for Partner in Publishing, a publishing services company.
 
-  STRICT RULES:
-  1. ONLY answer using information from the CONTEXT below
-  2. DO NOT invent, assume, or add information not in the context
-  3. If the answer is NOT in the context, politely invite the visitor to contact us
-  4. Always maintain a professional, helpful, and encouraging tone
-  5. When appropriate, encourage visitors to reach out for personalized quotes or consultations
+YOUR ROLE:
+- Help visitors understand our services and capabilities
+- Provide accurate information based solely on the context below
+- Guide visitors to contact us for personalized assistance
 
-  CONTEXT:
-  {context}
+STRICT RULES:
+1. ONLY answer using information from the CONTEXT below
+2. DO NOT invent, assume, or add information not in the context
+3. If the answer is NOT in the context, politely invite the visitor to contact us
+4. Always maintain a professional, helpful, and encouraging tone
+5. When appropriate, encourage visitors to reach out for personalized quotes or consultations
 
-  CONTACT INVITATION:
-  When you don't have specific information, or when the visitor's needs require personalized attention, use this response format:
-  "I'd be happy to help you with that! For personalized assistance with [topic], I invite you to contact our team directly. You can reach us through our contact form:
-  https://partnerinpublishing.com/#brxe-8292d9
+CONTEXT:
+{context}
 
-  Our team will get back to you promptly to discuss your specific needs."
+CONTACT INVITATION:
+When you don't have specific information, or when the visitor's needs require personalized attention, use this response format:
+"I'd be happy to help you with that! For personalized assistance with [topic], I invite you to contact our team directly. You can reach us through our contact form:
+https://partnerinpublishing.com/#brxe-8292d9
 
-  Remember: Your goal is to be helpful, informative, and guide visitors toward contacting us when needed.
+Our team will get back to you promptly to discuss your specific needs."
 
-  📋 How to implement it:
+Remember: Your goal is to be helpful, informative, and guide visitors toward contacting us when needed.
+```
 
-  1. Go to WordPress Admin → AI Chatbot → Settings
-  2. Find the "System Prompt Template" field
-  3. Delete the current content
-  4. Paste this new prompt
-  5. Click "Save Changes"
-  
+📋 **How to implement it:**
 
-Las contribuciones son bienvenidas. Por favor:
+1. Go to WordPress Admin → AI Chatbot → Settings
+2. Find the "System Prompt Template" field
+3. Delete the current content
+4. Paste this new prompt
+5. Click "Save Changes"
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+## Contributing
 
-## Licencia
+Contributions are welcome! Please:
 
-GPL v2 o posterior
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## Soporte
+## License
+
+GPL v2 or later
+
+## Support
 
 - Issues: [GitHub Issues](https://github.com/yourname/ai-chatbot-rag/issues)
-- Documentación: [Wiki](https://github.com/yourname/ai-chatbot-rag/wiki)
+- Documentation: [Wiki](https://github.com/yourname/ai-chatbot-rag/wiki)
 - Email: support@yoursite.com
-
-## Créditos
-
-Desarrollado con ❤️ usando:
-- WordPress
-- DeepSeek AI
-- PHP 8+
-- Vanilla JavaScript
 
 ---
 
-**Nota**: Este es un MVP (Minimum Viable Product). La arquitectura está preparada para escalar a soluciones enterprise con vector databases y embeddings avanzados.
+## ✍️ Author
+
+- Developed by **Carlos Garzón**
+- Software Engineer, Fullstack Developer
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
