@@ -3,7 +3,7 @@
  * Plugin Name: AI Chatbot PIP
  * Plugin URI: https://partnerinpublishing.com/
     * Description: Intelligent customer support chatbot, trained on the website’s own content, using RAG to deliver contextualized, accurate, and real-time responses.
- * Version: 1.1.0
+ * Version: 8.0.0
  * Author: Dev Team PIP
  * License: MIT
  * License URI: https://mit-license.org/
@@ -54,6 +54,8 @@ class Plugin {
 
         // Services
         require_once AI_CHATBOT_RAG_PLUGIN_DIR . 'includes/services/class-content-indexer.php';
+        require_once AI_CHATBOT_RAG_PLUGIN_DIR . 'includes/services/class-selective-indexer.php';
+        require_once AI_CHATBOT_RAG_PLUGIN_DIR . 'includes/services/class-bricks-content-extractor.php';
         require_once AI_CHATBOT_RAG_PLUGIN_DIR . 'includes/services/class-embeddings-service.php';
         require_once AI_CHATBOT_RAG_PLUGIN_DIR . 'includes/services/class-deepseek-client.php';
         require_once AI_CHATBOT_RAG_PLUGIN_DIR . 'includes/services/class-rag-engine.php';

@@ -83,6 +83,9 @@ if (!defined('ABSPATH')) {
                     </svg>
                 </button>
             </form>
+            <div class="ai-chatbot-support-link">
+                <p>Still having issues? Create a Support Ticket <a href="https://olihelp.zohodesk.com/portal/en/newticket" target="_blank" rel="noopener noreferrer">HERE</a></p>
+            </div>
         </div>
     </div>
 </div>

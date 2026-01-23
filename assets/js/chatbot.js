@@ -51,6 +51,9 @@
             if (this.closeBtn) {
                 this.closeBtn.addEventListener('click', () => this.toggleChat());
             }
+
+            // Greeting shown flag
+            this.greetingShown = false;
         }
 
         toggleChat() {
@@ -59,6 +62,10 @@
             if (this.isOpen) {
                 this.floatingWindow.style.display = 'block';
                 this.floatingBtn.classList.add('active');
+                
+                // Show greeting message on first open
+                this.showGreeting();
+                
                 this.input.focus();
             } else {
                 this.floatingWindow.style.display = 'none';
@@ -144,7 +151,8 @@
                 },
                 body: JSON.stringify({
                     message: message,
-                    session_id: aiChatbotConfig.sessionId
+                    session_id: aiChatbotConfig.sessionId,
+                    current_page_url: aiChatbotConfig.currentPageUrl
                 })
             });
 
@@ -240,6 +248,68 @@
 
         scrollToBottom() {
             this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+        }
+
+        showGreeting() {
+            // Check if greeting has already been shown in this session
+            if (this.greetingShown) {
+                return;
+            }
+
+            // Check if greeting message is configured
+            if (typeof aiChatbotConfig !== 'undefined' && aiChatbotConfig.greeting) {
+                const greeting = aiChatbotConfig.greeting.trim();
+                if (greeting && this.messagesContainer.children.length === 0) {
+                    this.addMessage(greeting, 'assistant');
+                    
+                    // Show quick actions after greeting
+                    this.showQuickActions();
+                    
+                    this.greetingShown = true;
+                }
+            }
+        }
+
+        showQuickActions() {
+            if (typeof aiChatbotConfig === 'undefined' || !aiChatbotConfig.quickActions) {
+                return;
+            }
+
+            const quickActions = aiChatbotConfig.quickActions.filter(action => 
+                action && action.trim() !== ''
+            );
+
+            if (quickActions.length === 0) {
+                return;
+            }
+
+            // Create quick actions container
+            const quickActionsDiv = document.createElement('div');
+            quickActionsDiv.className = 'ai-chatbot-quick-actions';
+
+            // Create quick action buttons
+            quickActions.forEach(action => {
+                const button = document.createElement('button');
+                button.className = 'ai-chatbot-quick-action-btn';
+                button.textContent = action.trim();
+                button.addEventListener('click', () => this.handleQuickAction(action.trim()));
+                quickActionsDiv.appendChild(button);
+            });
+
+            this.messagesContainer.appendChild(quickActionsDiv);
+            this.scrollToBottom();
+        }
+
+        handleQuickAction(action) {
+            // Remove quick actions when user clicks one
+            const quickActionsDiv = this.messagesContainer.querySelector('.ai-chatbot-quick-actions');
+            if (quickActionsDiv) {
+                quickActionsDiv.remove();
+            }
+
+            // Submit the question
+            this.input.value = action;
+            this.form.dispatchEvent(new Event('submit'));
         }
     }
 

@@ -271,6 +271,69 @@ if (isset($_POST['ai_chatbot_rag_save_settings'])) {
 
                     <tr>
                         <th scope="row">
+                            <label for="chatbot_greeting"><?php _e('Greeting Message', 'ai-chatbot-rag'); ?></label>
+                        </th>
+                        <td>
+                            <textarea id="chatbot_greeting"
+                                      name="ai_chatbot_rag_ui[ai_chatbot_rag_chatbot_greeting]"
+                                      rows="3"
+                                      class="large-text"><?php echo esc_textarea(get_option('ai_chatbot_rag_chatbot_greeting', '¡Hola! ¿En qué puedo ayudarte hoy?')); ?></textarea>
+                            <p class="description"><?php _e('Message to display when the chat opens. Leave empty to disable.', 'ai-chatbot-rag'); ?></p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="chatbot_quick_actions"><?php _e('Quick Actions', 'ai-chatbot-rag'); ?></label>
+                        </th>
+                        <td>
+                            <div id="quick-actions-container">
+                                <p class="description"><?php _e('Add up to 6 quick action buttons that users can click to ask common questions.', 'ai-chatbot-rag'); ?></p>
+                                
+                                <div id="quick-actions-list">
+                                    <?php
+                                    $quickActions = get_option('ai_chatbot_rag_quick_actions', [
+                                        '¿Qué productos ofrecen?',
+                                        '¿Cuáles son sus horarios?',
+                                        '¿Cómo contactarlos?'
+                                    ]);
+                                    
+                                    if (!is_array($quickActions)) {
+                                        $quickActions = [];
+                                    }
+                                    
+                                    foreach ($quickActions as $index => $action) {
+                                        echo '<div class="quick-action-item">';
+                                        echo '<input type="text" name="ai_chatbot_rag_ui[ai_chatbot_rag_quick_actions][]" value="' . esc_attr($action) . '" class="regular-text" placeholder="' . esc_attr__('Enter quick action text', 'ai-chatbot-rag') . '">';
+                                        echo '<button type="button" class="button button-small remove-quick-action">' . __('Remove', 'ai-chatbot-rag') . '</button>';
+                                        echo '</div>';
+                                    }
+                                    
+                                    // Add empty slots up to 6
+                                    for ($i = count($quickActions); $i < 6; $i++) {
+                                        echo '<div class="quick-action-item" style="display:none;">';
+                                        echo '<input type="text" name="ai_chatbot_rag_ui[ai_chatbot_rag_quick_actions][]" value="" class="regular-text" placeholder="' . esc_attr__('Enter quick action text', 'ai-chatbot-rag') . '">';
+                                        echo '<button type="button" class="button button-small remove-quick-action">' . __('Remove', 'ai-chatbot-rag') . '</button>';
+                                        echo '</div>';
+                                    }
+                                    ?>
+                                </div>
+                                
+                                <p>
+                                    <button type="button" id="add-quick-action" class="button">
+                                        <?php _e('Add Quick Action', 'ai-chatbot-rag'); ?>
+                                    </button>
+                                </p>
+                                
+                                <p class="description">
+                                    <?php _e('Tip: Use clear, concise questions that users commonly ask. Maximum 6 quick actions.', 'ai-chatbot-rag'); ?>
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
                             <label for="button_position"><?php _e('Button Position', 'ai-chatbot-rag'); ?></label>
                         </th>
                         <td>
@@ -376,3 +439,54 @@ if (isset($_POST['ai_chatbot_rag_save_settings'])) {
         </div>
     </form>
 </div>
+
+<script>
+jQuery(document).ready(function($) {
+    let quickActionCount = $('.quick-action-item').filter(function() {
+        return $(this).find('input').val() !== '';
+    }).length;
+    
+    // Show existing quick actions
+    $('.quick-action-item input').each(function() {
+        if ($(this).val() !== '') {
+            $(this).closest('.quick-action-item').show();
+            quickActionCount++;
+        }
+    });
+    
+    // Add quick action
+    $('#add-quick-action').on('click', function() {
+        if (quickActionCount >= 6) {
+            alert('<?php _e('Maximum 6 quick actions allowed.', 'ai-chatbot-rag'); ?>');
+            return;
+        }
+        
+        const $hiddenItem = $('.quick-action-item:hidden:first');
+        if ($hiddenItem.length) {
+            $hiddenItem.show();
+            quickActionCount++;
+            updateAddButton();
+        }
+    });
+    
+    // Remove quick action
+    $(document).on('click', '.remove-quick-action', function() {
+        const $item = $(this).closest('.quick-action-item');
+        $item.find('input').val('');
+        $item.hide();
+        quickActionCount--;
+        updateAddButton();
+    });
+    
+    function updateAddButton() {
+        $('#add-quick-action').prop('disabled', quickActionCount >= 6);
+        if (quickActionCount >= 6) {
+            $('#add-quick-action').text('<?php _e('Maximum Quick Actions Reached', 'ai-chatbot-rag'); ?>');
+        } else {
+            $('#add-quick-action').text('<?php _e('Add Quick Action', 'ai-chatbot-rag'); ?>');
+        }
+    }
+    
+    updateAddButton();
+});
+</script>

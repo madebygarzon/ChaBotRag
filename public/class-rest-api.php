@@ -52,6 +52,11 @@ class RestAPI {
                         return !empty($value) && strlen($value) <= 64;
                     },
                 ],
+                'current_page_url' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'sanitize_callback' => 'esc_url_raw',
+                ],
             ],
         ]);
 
@@ -97,6 +102,7 @@ class RestAPI {
 
         $message = $request->get_param('message');
         $sessionId = $request->get_param('session_id');
+        $currentPageUrl = $request->get_param('current_page_url');
         $userId = get_current_user_id() ?: null;
 
         error_log('AI Chatbot RAG: Message: ' . substr($message, 0, 100));
@@ -114,7 +120,7 @@ class RestAPI {
         // Process chat
         try {
             error_log('AI Chatbot RAG: Starting RAG engine chat');
-            $result = $this->ragEngine->chat($message, $sessionId, $userId);
+            $result = $this->ragEngine->chat($message, $sessionId, $userId, $currentPageUrl);
             error_log('AI Chatbot RAG: RAG engine result: ' . wp_json_encode($result));
 
             if (!$result['success']) {

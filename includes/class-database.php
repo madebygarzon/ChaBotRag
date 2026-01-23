@@ -19,6 +19,7 @@ class Database {
     public const TABLE_CHUNKS = 'ai_chatbot_chunks';
     public const TABLE_EMBEDDINGS = 'ai_chatbot_embeddings';
     public const TABLE_CONVERSATIONS = 'ai_chatbot_conversations';
+    public const TABLE_SELECTIVE_INDEXING = 'ai_chatbot_selective_indexing';
 
     /**
      * Get full table name with WordPress prefix
@@ -88,6 +89,21 @@ class Database {
             KEY created_at (created_at)
         ) {$charset_collate};";
 
+        // Selective indexing table - stores individual post/page indexing settings
+        $selective_indexing_table = self::getTableName(self::TABLE_SELECTIVE_INDEXING);
+        $sql[] = "CREATE TABLE IF NOT EXISTS {$selective_indexing_table} (
+            id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            post_id bigint(20) UNSIGNED NOT NULL,
+            post_type varchar(20) NOT NULL,
+            index_status varchar(20) NOT NULL DEFAULT 'auto',
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            UNIQUE KEY post_type_id (post_id, post_type),
+            KEY post_type (post_type),
+            KEY index_status (index_status)
+        ) {$charset_collate};";
+
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
         foreach ($sql as $query) {
@@ -105,6 +121,7 @@ class Database {
             self::getTableName(self::TABLE_CHUNKS),
             self::getTableName(self::TABLE_EMBEDDINGS),
             self::getTableName(self::TABLE_CONVERSATIONS),
+            self::getTableName(self::TABLE_SELECTIVE_INDEXING),
         ];
 
         foreach ($tables as $table) {
@@ -122,6 +139,7 @@ class Database {
             self::getTableName(self::TABLE_CHUNKS),
             self::getTableName(self::TABLE_EMBEDDINGS),
             self::getTableName(self::TABLE_CONVERSATIONS),
+            self::getTableName(self::TABLE_SELECTIVE_INDEXING),
         ];
 
         foreach ($tables as $table) {

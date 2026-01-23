@@ -23,12 +23,16 @@ class ContentIndexer {
     private int $chunkOverlap;
     private array $enabledPostTypes;
     private array $excludeCategories;
+    private SelectiveIndexer $selectiveIndexer;
+    private BricksContentExtractor $bricksExtractor;
 
     public function __construct() {
         $this->chunkSize = (int) get_option('ai_chatbot_rag_chunk_size', 500);
         $this->chunkOverlap = (int) get_option('ai_chatbot_rag_chunk_overlap', 50);
         $this->enabledPostTypes = get_option('ai_chatbot_rag_enabled_post_types', ['post', 'page']);
         $this->excludeCategories = get_option('ai_chatbot_rag_exclude_categories', []);
+        $this->selectiveIndexer = new SelectiveIndexer();
+        $this->bricksExtractor = new BricksContentExtractor();
     }
 
     /**
@@ -226,7 +230,8 @@ class ContentIndexer {
             $args['category__not_in'] = $this->excludeCategories;
         }
 
-        return get_posts($args);
+        // Use selective indexer to get filtered posts
+        return $this->selectiveIndexer->getPostsToIndex($postType, $args);
     }
 
     /**
@@ -243,6 +248,11 @@ class ContentIndexer {
             return false;
         }
 
+        // Check selective indexing settings first
+        if (!$this->selectiveIndexer->shouldIndexPost($post->ID, $post->post_type)) {
+            return false;
+        }
+
         // Check excluded categories
         if (!empty($this->excludeCategories) && $post->post_type === 'post') {
             $categories = wp_get_post_categories($post->ID);
@@ -255,7 +265,7 @@ class ContentIndexer {
     }
 
     /**
-     * Extract post content including ACF fields
+     * Extract post content including ACF fields and Bricks elements
      */
     private function extractPostContent(\WP_Post $post): string {
         $content = sprintf(
@@ -264,6 +274,12 @@ class ContentIndexer {
             $post->post_excerpt,
             $post->post_content
         );
+
+        // Extract content from Bricks elements using specialized extractor
+        $bricksContent = $this->bricksExtractor->extractContent($post->ID);
+        if ($bricksContent) {
+            $content .= "\n\n" . $bricksContent;
+        }
 
         // Add ACF fields if available
         if (function_exists('get_fields')) {
@@ -285,23 +301,50 @@ class ContentIndexer {
      * Clean content from HTML, shortcodes, and scripts
      */
     private function cleanContent(string $content): string {
-        // Remove shortcodes
-        $content = strip_shortcodes($content);
+        try {
+            // Remove shortcodes
+            $content = strip_shortcodes($content);
 
-        // Remove HTML tags
-        $content = wp_strip_all_tags($content);
+            // Handle Q: and A: format from Bricks extraction
+            if (preg_match('/Q:.*?\nA:.*?\n/s', $content)) {
+                // This is already in Q/A format, just clean it up
+                $content = preg_replace('/\s+/', ' ', $content);
+                $content = trim($content);
+                return $content;
+            }
 
-        // Remove script and style tags content
-        $content = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $content);
-        $content = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $content);
+            // Remove HTML tags
+            $content = wp_strip_all_tags($content);
 
-        // Remove multiple spaces and newlines
-        $content = preg_replace('/\s+/', ' ', $content);
+            // Remove script and style tags content
+            $content = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $content);
+            $content = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $content);
 
-        // Trim
-        $content = trim($content);
+            // Remove WordPress blocks HTML comments
+            $content = preg_replace('/<!-- wp:.*? -->/', '', $content);
+            $content = preg_replace('/<!-- \/wp:.*? -->/', '', $content);
 
-        return $content;
+            // Remove HTML entities and special characters
+            $content = html_entity_decode($content, ENT_QUOTES, 'UTF-8');
+
+            // Remove multiple spaces and newlines, but preserve Q/A structure
+            $content = preg_replace('/[ \t]+/', ' ', $content);
+            $content = preg_replace('/\n\s*\n/', "\n", $content);
+            $content = preg_replace('/\s*\n\s*/', "\n", $content);
+
+            // Trim
+            $content = trim($content);
+
+            // Limit content length to avoid issues
+            if (strlen($content) > 100000) { // 100KB limit
+                $content = substr($content, 0, 100000) . '...';
+            }
+
+            return $content;
+        } catch (\Exception $e) {
+            error_log('Content cleaning error: ' . $e->getMessage());
+            return '';
+        }
     }
 
     /**

@@ -38,13 +38,13 @@ class RAGEngine {
     /**
      * Process a user message and generate response
      */
-    public function chat(string $userMessage, string $sessionId, ?int $userId = null): array {
+    public function chat(string $userMessage, string $sessionId, ?int $userId = null, ?string $currentPageUrl = null): array {
         try {
             error_log('AI Chatbot RAG: RAG Engine chat started');
 
             // 1. Retrieve relevant context chunks
             error_log('AI Chatbot RAG: Retrieving context...');
-            $relevantChunks = $this->retrieveContext($userMessage);
+            $relevantChunks = $this->retrieveContext($userMessage, $currentPageUrl);
             error_log('AI Chatbot RAG: Found ' . count($relevantChunks) . ' relevant chunks');
 
             // 2. Build context string
@@ -109,9 +109,9 @@ class RAGEngine {
     /**
      * Retrieve relevant context chunks for the query
      */
-    private function retrieveContext(string $query): array {
-        // Use embeddings service to find similar chunks
-        $chunks = $this->embeddingsService->searchChunksFullText($query, $this->maxContextChunks);
+    private function retrieveContext(string $query, ?string $currentPageUrl = null): array {
+        // Use embeddings service to find similar chunks with page-specific prioritization
+        $chunks = $this->embeddingsService->searchChunksFullText($query, $this->maxContextChunks, $currentPageUrl);
 
         // Fallback to keyword search if no results
         if (empty($chunks)) {

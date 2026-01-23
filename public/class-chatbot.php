@@ -49,8 +49,15 @@ class Chatbot {
             'apiUrl' => rest_url('ai-chatbot-rag/v1/chat'),
             'nonce' => wp_create_nonce('wp_rest'),
             'sessionId' => $this->getOrCreateSessionId(),
+            'currentPageUrl' => $this->getCurrentPageUrl(),
             'title' => get_option('ai_chatbot_rag_chatbot_title', __('¿Cómo podemos ayudarte?', 'ai-chatbot-rag')),
             'placeholder' => get_option('ai_chatbot_rag_chatbot_placeholder', __('Escribe tu pregunta...', 'ai-chatbot-rag')),
+            'greeting' => get_option('ai_chatbot_rag_chatbot_greeting', '¡Hola! ¿En qué puedo ayudarte hoy?'),
+            'quickActions' => get_option('ai_chatbot_rag_quick_actions', [
+                '¿Qué productos ofrecen?',
+                '¿Cuáles son sus horarios?',
+                '¿Cómo contactarlos?'
+            ]),
             'buttonPosition' => get_option('ai_chatbot_rag_button_position', 'bottom-right'),
             'buttonIcon' => get_option('ai_chatbot_rag_button_icon', 'chat'),
             'primaryColor' => get_option('ai_chatbot_rag_primary_color', '#CF142B'),
@@ -127,5 +134,24 @@ class Chatbot {
         setcookie($cookieName, $sessionId, time() + (30 * DAY_IN_SECONDS), COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true);
 
         return $sessionId;
+    }
+
+    /**
+     * Get current page URL
+     */
+    private function getCurrentPageUrl(): string {
+        global $wp;
+        
+        // Get the current URL
+        $current_url = home_url(add_query_arg([], $wp->request));
+        
+        // If we're on a specific post/page, get its permalink
+        if (is_singular() || is_page()) {
+            $current_url = get_permalink();
+        } elseif (is_home() || is_front_page()) {
+            $current_url = home_url();
+        }
+        
+        return esc_url($current_url);
     }
 }
