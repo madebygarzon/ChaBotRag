@@ -556,4 +556,11 @@
         width: 56px;
         height: 56px;
     }
+
+    .ai-chatbot-support-link {
+        padding-top: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        padding-left: 4px;
+    }
 }
