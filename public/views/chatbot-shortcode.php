@@ -37,23 +37,16 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
-    <div class="ai-chatbot-messages" id="ai-chatbot-messages">
-        <div class="ai-chatbot-message ai-chatbot-message-assistant">
-            <div class="ai-chatbot-message-content">
-                <?php echo esc_html($atts['title']); ?>
-            </div>
-        </div>
-    </div>
+    <div class="ai-chatbot-messages"></div>
 
     <div class="ai-chatbot-input-container">
-        <form id="ai-chatbot-form" class="ai-chatbot-form">
+        <form class="ai-chatbot-form">
             <textarea
-                id="ai-chatbot-input"
                 class="ai-chatbot-input"
                 placeholder="<?php echo esc_attr(get_option('ai_chatbot_rag_chatbot_placeholder', __('Escribe tu pregunta...', 'ai-chatbot-rag'))); ?>"
                 rows="1"
             ></textarea>
-            <button type="submit" class="ai-chatbot-send-btn" id="ai-chatbot-send-btn">
+            <button type="submit" class="ai-chatbot-send-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>

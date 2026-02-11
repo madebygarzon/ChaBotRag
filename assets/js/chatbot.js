@@ -5,67 +5,78 @@
 (function() {
     'use strict';
 
-    class AIChatbot {
-        constructor() {
-            this.form = document.getElementById('ai-chatbot-form');
-            this.input = document.getElementById('ai-chatbot-input');
-            this.sendBtn = document.getElementById('ai-chatbot-send-btn');
-            this.messagesContainer = document.getElementById('ai-chatbot-messages');
-            this.floatingBtn = document.getElementById('ai-chatbot-floating-btn');
-            this.floatingWindow = document.getElementById('ai-chatbot-floating-window');
-            this.closeBtn = document.getElementById('ai-chatbot-close-btn');
+    class AIChatbotInstance {
+        constructor(options = {}) {
+            this.root = options.root || null;
+            this.form = options.form || null;
+            this.input = options.input || null;
+            this.sendBtn = options.sendBtn || null;
+            this.messagesContainer = options.messagesContainer || null;
+            this.floatingBtn = options.floatingBtn || null;
+            this.floatingWindow = options.floatingWindow || null;
+            this.closeBtn = options.closeBtn || null;
+            this.mode = options.mode || 'embedded';
 
-            // Initialize even if form not found (floating button might exist without form initially)
+            if (!this.form || !this.input || !this.sendBtn || !this.messagesContainer) {
+                return;
+            }
+
             this.isProcessing = false;
             this.isOpen = false;
+            this.greetingShown = false;
+
             this.init();
         }
 
         init() {
-            // Apply custom color
-            if (typeof aiChatbotConfig !== 'undefined' && aiChatbotConfig.primaryColor) {
+            this.applyThemeVariables();
+
+            this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+            this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
+            this.input.addEventListener('input', () => this.autoResize());
+
+            if (this.mode === 'floating') {
+                if (this.floatingBtn) {
+                    this.floatingBtn.addEventListener('click', () => this.toggleChat());
+                }
+
+                if (this.closeBtn) {
+                    this.closeBtn.addEventListener('click', () => this.toggleChat());
+                }
+            } else {
+                this.showGreeting();
+            }
+        }
+
+        applyThemeVariables() {
+            if (typeof aiChatbotConfig === 'undefined') {
+                return;
+            }
+
+            if (aiChatbotConfig.primaryColor) {
                 document.documentElement.style.setProperty('--chatbot-primary-color', aiChatbotConfig.primaryColor);
 
-                // Calculate darker hover color
                 const hoverColor = this.adjustColorBrightness(aiChatbotConfig.primaryColor, -20);
                 document.documentElement.style.setProperty('--chatbot-primary-hover', hoverColor);
             }
 
-            // Apply custom bot avatar size
-            if (typeof aiChatbotConfig !== 'undefined' && aiChatbotConfig.botAvatarSize) {
+            if (aiChatbotConfig.botAvatarSize) {
                 document.documentElement.style.setProperty('--chatbot-bot-icon-size', aiChatbotConfig.botAvatarSize + 'px');
             }
-
-            // Form events (only if form exists)
-            if (this.form && this.input) {
-                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-                this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
-                this.input.addEventListener('input', () => this.autoResize());
-            }
-
-            // Floating widget events
-            if (this.floatingBtn) {
-                this.floatingBtn.addEventListener('click', () => this.toggleChat());
-            }
-
-            if (this.closeBtn) {
-                this.closeBtn.addEventListener('click', () => this.toggleChat());
-            }
-
-            // Greeting shown flag
-            this.greetingShown = false;
         }
 
         toggleChat() {
+            if (!this.floatingWindow || !this.floatingBtn) {
+                return;
+            }
+
             this.isOpen = !this.isOpen;
 
             if (this.isOpen) {
                 this.floatingWindow.style.display = 'block';
                 this.floatingBtn.classList.add('active');
-                
-                // Show greeting message on first open
+
                 this.showGreeting();
-                
                 this.input.focus();
             } else {
                 this.floatingWindow.style.display = 'none';
@@ -74,18 +85,15 @@
         }
 
         adjustColorBrightness(color, amount) {
-            // Convert hex to RGB
             let hex = color.replace('#', '');
             let r = parseInt(hex.substring(0, 2), 16);
             let g = parseInt(hex.substring(2, 4), 16);
             let b = parseInt(hex.substring(4, 6), 16);
 
-            // Adjust brightness
             r = Math.max(0, Math.min(255, r + amount));
             g = Math.max(0, Math.min(255, g + amount));
             b = Math.max(0, Math.min(255, b + amount));
 
-            // Convert back to hex
             return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
         }
 
@@ -109,23 +117,19 @@
                 return;
             }
 
-            // Add user message to UI
+            this.removeQuickActions();
             this.addMessage(message, 'user');
 
-            // Clear input
             this.input.value = '';
             this.input.style.height = 'auto';
 
-            // Disable input
             this.setProcessing(true);
 
-            // Show typing indicator
             const typingId = this.showTyping();
 
             try {
                 const response = await this.sendMessage(message);
 
-                // Remove typing indicator
                 this.removeTyping(typingId);
 
                 if (response.success) {
@@ -177,7 +181,6 @@
 
             messageDiv.appendChild(contentDiv);
 
-            // Add sources if available
             if (sources && sources.length > 0) {
                 const sourcesDiv = document.createElement('div');
                 sourcesDiv.className = 'ai-chatbot-message-sources';
@@ -250,49 +253,69 @@
             this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
         }
 
+        hasRenderableMessages() {
+            return this.messagesContainer.querySelector('.ai-chatbot-message') !== null;
+        }
+
         showGreeting() {
-            // Check if greeting has already been shown in this session
             if (this.greetingShown) {
                 return;
             }
 
-            // Check if greeting message is configured
-            if (typeof aiChatbotConfig !== 'undefined' && aiChatbotConfig.greeting) {
-                const greeting = aiChatbotConfig.greeting.trim();
-                if (greeting && this.messagesContainer.children.length === 0) {
-                    this.addMessage(greeting, 'assistant');
-                    
-                    // Show quick actions after greeting
-                    this.showQuickActions();
-                    
-                    this.greetingShown = true;
-                }
+            if (typeof aiChatbotConfig === 'undefined' || !aiChatbotConfig.greeting) {
+                return;
+            }
+
+            const greeting = String(aiChatbotConfig.greeting).trim();
+            if (!greeting) {
+                return;
+            }
+
+            if (!this.hasRenderableMessages()) {
+                this.addMessage(greeting, 'assistant');
+            }
+
+            this.showQuickActions();
+            this.greetingShown = true;
+        }
+
+        getQuickActions() {
+            if (typeof aiChatbotConfig === 'undefined' || !aiChatbotConfig.quickActions) {
+                return [];
+            }
+
+            const rawQuickActions = aiChatbotConfig.quickActions;
+            const quickActions = Array.isArray(rawQuickActions) ? rawQuickActions : [rawQuickActions];
+
+            return quickActions
+                .map(action => String(action).trim())
+                .filter(action => action !== '');
+        }
+
+        removeQuickActions() {
+            const quickActionsDiv = this.messagesContainer.querySelector('.ai-chatbot-quick-actions');
+            if (quickActionsDiv) {
+                quickActionsDiv.remove();
             }
         }
 
         showQuickActions() {
-            if (typeof aiChatbotConfig === 'undefined' || !aiChatbotConfig.quickActions) {
-                return;
-            }
+            this.removeQuickActions();
 
-            const quickActions = aiChatbotConfig.quickActions.filter(action => 
-                action && action.trim() !== ''
-            );
-
+            const quickActions = this.getQuickActions();
             if (quickActions.length === 0) {
                 return;
             }
 
-            // Create quick actions container
             const quickActionsDiv = document.createElement('div');
             quickActionsDiv.className = 'ai-chatbot-quick-actions';
 
-            // Create quick action buttons
             quickActions.forEach(action => {
                 const button = document.createElement('button');
                 button.className = 'ai-chatbot-quick-action-btn';
-                button.textContent = action.trim();
-                button.addEventListener('click', () => this.handleQuickAction(action.trim()));
+                button.type = 'button';
+                button.textContent = action;
+                button.addEventListener('click', () => this.handleQuickAction(action));
                 quickActionsDiv.appendChild(button);
             });
 
@@ -301,23 +324,80 @@
         }
 
         handleQuickAction(action) {
-            // Remove quick actions when user clicks one
-            const quickActionsDiv = this.messagesContainer.querySelector('.ai-chatbot-quick-actions');
-            if (quickActionsDiv) {
-                quickActionsDiv.remove();
-            }
-
-            // Submit the question
+            this.removeQuickActions();
             this.input.value = action;
             this.form.dispatchEvent(new Event('submit'));
         }
     }
 
-    // Initialize chatbot when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => new AIChatbot());
-    } else {
-        new AIChatbot();
+    function getElementsFromContainer(container) {
+        if (!container) {
+            return null;
+        }
+
+        const form = container.querySelector('.ai-chatbot-form');
+        const input = container.querySelector('.ai-chatbot-input');
+        const sendBtn = container.querySelector('.ai-chatbot-send-btn');
+        const messagesContainer = container.querySelector('.ai-chatbot-messages');
+
+        if (!form || !input || !sendBtn || !messagesContainer) {
+            return null;
+        }
+
+        return { form, input, sendBtn, messagesContainer };
     }
 
+    function initFloatingChatbot() {
+        const floatingWindow = document.getElementById('ai-chatbot-floating-window');
+        const floatingBtn = document.getElementById('ai-chatbot-floating-btn');
+
+        if (!floatingWindow || !floatingBtn) {
+            return;
+        }
+
+        const floatingContainer = floatingWindow.querySelector('.ai-chatbot-container');
+        const floatingElements = getElementsFromContainer(floatingContainer);
+        const closeBtn = floatingWindow.querySelector('#ai-chatbot-close-btn');
+
+        if (!floatingElements) {
+            return;
+        }
+
+        new AIChatbotInstance({
+            ...floatingElements,
+            root: floatingContainer,
+            floatingBtn,
+            floatingWindow,
+            closeBtn,
+            mode: 'floating'
+        });
+    }
+
+    function initEmbeddedChatbots() {
+        const containers = document.querySelectorAll('.ai-chatbot-container:not(.ai-chatbot-floating)');
+
+        containers.forEach(container => {
+            const elements = getElementsFromContainer(container);
+            if (!elements) {
+                return;
+            }
+
+            new AIChatbotInstance({
+                ...elements,
+                root: container,
+                mode: 'embedded'
+            });
+        });
+    }
+
+    function init() {
+        initFloatingChatbot();
+        initEmbeddedChatbots();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 })();
