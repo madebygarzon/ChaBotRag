@@ -3,8 +3,8 @@
  */
 
 :root {
-    --chatbot-primary-color: #CF142B;
-    --chatbot-primary-hover: #a30f22;
+    --chatbot-primary-color: #1f649e;
+    --chatbot-primary-hover: #15456c;
     --chatbot-bot-icon-size: 28px;
 }
 
@@ -19,7 +19,6 @@
     background: var(--chatbot-primary-color);
     color: #fff;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(207, 20, 43, 0.4);
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -28,7 +27,6 @@
 
 .ai-chatbot-floating-btn:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(207, 20, 43, 0.5);
 }
 
 .ai-chatbot-floating-btn[data-position="bottom-right"] {
@@ -331,7 +329,7 @@
     background: var(--chatbot-primary-color);
     color: #fff;
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(207, 20, 43, 0.3);
+    box-shadow: 0 2px 8px rgba(10, 74, 104, 0.3);
 }
 
 .ai-chatbot-quick-action-btn:active {
@@ -369,7 +367,7 @@
 }
 
 .quick-action-item .remove-quick-action {
-    background: #dc3545;
+    background: #1f649e;
     color: #fff;
     border: none;
     padding: 5px 10px;
@@ -379,7 +377,7 @@
 }
 
 .quick-action-item .remove-quick-action:hover {
-    background: #c82333;
+    background: #1f649e;
 }
 
 #quick-actions-container {
@@ -474,7 +472,7 @@
 
 .ai-chatbot-send-btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(207, 20, 43, 0.4);
+    box-shadow: 0 4px 12px rgba(8, 62, 82, 0.4);
     background: var(--chatbot-primary-hover);
 }
 
