@@ -39,5 +39,13 @@ WordPress plugin that delivers contextual customer support answers using Retriev
 - Better consistency in customer communication
 - Reduced manual support load for repetitive questions
 
+---
 ## Author
-**Carlos Garzón**
+
+- Created by **Carlos Garzón**
+- Software Engineer, Fullstack Developer.
+---
+
+## Licenses
+
+MIT
